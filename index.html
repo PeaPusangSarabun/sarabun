@@ -42,21 +42,16 @@
       }
 
      async function sendData(data) {
-  const plainObject = {};
-  data.forEach((value, key) => {
-    plainObject[key] = value;
-  });
-
-  const res = await fetch("https://script.google.com/macros/s/AKfycbw-4250l5V16LMiOzC2QyVNB3BEUhJITAx8QAXpgfzak2aXDSHotkkdzeBUw-mIV7VNPg/exec", {
+  const res = await fetch("https://script.google.com/macros/s/AKfycbw-.../exec", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(plainObject)
+    body: data
+    // ❌ อย่าใส่ headers: Content-Type เพราะ fetch จะจัดการให้
   });
-
   const text = await res.text();
   document.getElementById("response").innerText = text;
   form.reset();
 }
+
     });
   </script>
 </body>
