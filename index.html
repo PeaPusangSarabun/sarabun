@@ -1,42 +1,56 @@
-<form id="sarabanForm">
-  <input type="text" name="from" placeholder="จาก" required>
-  <input type="text" name="to" placeholder="ถึง" required>
-  <input type="text" name="subject" placeholder="เรื่อง" required>
-  <select name="category">
-    <option value="ภายใน">ภายใน</option>
-    <option value="ภายนอก">ภายนอก</option>
-  </select>
-  <input type="file" name="file" />
-  <button type="submit">ส่งข้อมูล</button>
-</form>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ระบบออกเลขสารบรรณ</title>
+</head>
+<body>
+  <h2>ฟอร์มเลขสารบรรณ</h2>
+  <form id="sarabanForm">
+    <label>จาก: <input type="text" name="from" required></label><br>
+    <label>ถึง: <input type="text" name="to" required></label><br>
+    <label>เรื่อง: <input type="text" name="subject" required></label><br>
+    <label>หมวดหมู่:
+      <select name="category">
+        <option value="ภายใน">ภายใน</option>
+        <option value="ภายนอก">ภายนอก</option>
+      </select>
+    </label><br>
+    <label>แนบไฟล์ PDF: <input type="file" name="file" accept=".pdf" /></label><br><br>
+    <button type="submit">บันทึกข้อมูล</button>
+  </form>
 
-<div id="response"></div>
+  <div id="response" style="margin-top: 20px; color: green;"></div>
 
-<script>
-  document.getElementById("sarabanForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const file = formData.get("file");
-    
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = async function() {
-        const base64 = reader.result.split(",")[1];
-        formData.set("file", base64);
+  <script>
+    document.getElementById("sarabanForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const file = formData.get("file");
+
+      if (file && file.type === "application/pdf") {
+        const reader = new FileReader();
+        reader.onload = async function () {
+          const base64 = reader.result.split(",")[1];
+          formData.set("file", base64);
+          sendData(formData);
+        };
+        reader.readAsDataURL(file);
+      } else {
         sendData(formData);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      sendData(formData);
-    }
+      }
 
-    async function sendData(data) {
-      const res = await fetch("https://script.google.com/macros/s/AKfycbw-4250l5V16LMiOzC2QyVNB3BEUhJITAx8QAXpgfzak2aXDSHotkkdzeBUw-mIV7VNPg/exec", {
-        method: "POST",
-        body: data
-      });
-      const text = await res.text();
-      document.getElementById("response").innerText = text;
-    }
-  });
-</script>
+      async function sendData(data) {
+        const res = await fetch("https://script.google.com/macros/s/AKfycbw-4250l5V16LMiOzC2QyVNB3BEUhJITAx8QAXpgfzak2aXDSHotkkdzeBUw-mIV7VNPg/exec", {
+          method: "POST",
+          body: data
+        });
+        const text = await res.text();
+        document.getElementById("response").innerText = text;
+        form.reset();
+      }
+    });
+  </script>
+</body>
+</html>
